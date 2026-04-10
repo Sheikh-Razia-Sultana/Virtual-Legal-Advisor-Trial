@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Virtual Legal Advisor — Law Made Accessible</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #1a1a18; --ink-mid: #3d3d38; --ink-light: #6b6b62; --ink-faint: #9b9b90;
+  --parchment: #f7f4ee; --parchment-d: #ede9df; --rule: #d4cfc3;
+  --accent: #8b6f47; --accent-d: #6b5235; --white: #ffffff;
+  --serif: 'EB Garamond', Georgia, serif; --sans: 'Jost', sans-serif;
+}
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--parchment); color: var(--ink); overflow-x: hidden; }
+a { text-decoration: none; color: inherit; cursor: pointer; }
+ul { list-style: none; }
+button { font-family: var(--sans); cursor: pointer; }
+
+/* PAGE TRANSITIONS */
+.page { display: none; animation: fadeIn 0.3s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ─── TOPBAR ─── */
+.topbar { background: var(--ink); color: rgba(255,255,255,.55); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; padding: 9px 0; text-align: center; }
+.topbar a { color: rgba(255,255,255,.8); border-bottom: 1px solid rgba(255,255,255,.2); }
+.topbar .sep { margin: 0 16px; opacity: .25; }
+
+/* ─── NAVBAR ─── */
+nav { background: var(--white); border-bottom: 1px solid var(--rule); position: sticky; top: 0; z-index: 200; }
+.nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 40px; display: flex; align-items: center; height: 68px; }
+.logo { font-family: var(--serif); font-size: 21px; font-weight: 500; color: var(--ink); display: flex; align-items: center; gap: 10px; flex-shrink: 0; cursor: pointer; }
+.logo-emblem { width: 34px; height: 34px; border: 1.5px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; color: var(--accent); }
+.logo em { color: var(--accent); font-style: normal; }
+.nav-links { display: flex; align-items: center; margin-left: 40px; flex: 1; }
+.nav-item { position: relative; }
+.nav-item > a { display: flex; align-items: center; gap: 5px; padding: 0 16px; height: 68px; font-size: 12.5px; font-weight: 400; letter-spacing: .04em; color: var(--ink-mid); border-bottom: 2px solid transparent; transition: color .2s, border-color .2s; }
+.nav-item > a.nav-active { color: var(--ink); border-bottom-color: var(--accent); }
+.nav-item:hover > a { color: var(--ink); border-bottom-color: var(--accent); }
+.chev { display: inline-block; width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg) translateY(-2px); transition: transform .2s; }
+.nav-item:hover .chev { transform: rotate(-135deg) translateY(-2px); }
+.dropdown { position: absolute; top: 100%; left: 0; background: var(--white); border: 1px solid var(--rule); border-top: 2px solid var(--accent); min-width: 640px; padding: 28px 32px; display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(6px); transition: opacity .2s, transform .2s, visibility .2s; box-shadow: 0 8px 32px rgba(0,0,0,.07); }
+.nav-item:hover .dropdown { opacity:1; visibility:visible; pointer-events:auto; transform:translateY(0); }
+.dd-col h4 { font-size: 9px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--rule); }
+.dd-col li { margin-bottom: 2px; }
+.dd-col a { font-size: 13px; color: var(--ink-mid); line-height: 1.9; transition: color .15s, padding .15s; display: block; }
+.dd-col a:hover { color: var(--accent); padding-left: 4px; }
+.dd-popular { background: var(--parchment); padding: 16px 18px; border-radius: 2px; }
+.dd-popular h5 { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; font-weight: 500; }
+.dd-popular a { font-size: 12.5px; color: var(--ink-mid); display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--rule); transition: color .15s; }
+.dd-popular a:last-child { border-bottom: none; }
+.dd-popular a:hover { color: var(--accent); }
+.dd-popular a::before { content:''; width:4px; height:4px; background:var(--accent); border-radius:50%; flex-shrink:0; }
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.btn-ghost { padding: 8px 18px; font-size: 12px; font-weight: 400; letter-spacing: .04em; color: var(--ink-mid); border: 1px solid var(--rule); border-radius: 2px; background: transparent; transition: all .2s; }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+.btn-solid { padding: 9px 20px; font-size: 12px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--white); background: var(--ink); border: 1px solid var(--ink); border-radius: 2px; transition: all .2s; }
+.btn-solid:hover { background: var(--accent); border-color: var(--accent); }
+
+/* ─── SHARED SECTION STYLES ─── */
+.section { padding: 80px 40px; }
+.section-inner { max-width: 1200px; margin: 0 auto; }
+.sec-label { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+.sec-title { font-family: var(--serif); font-size: clamp(26px,3.5vw,38px); font-weight: 400; line-height: 1.2; color: var(--ink); max-width: 580px; }
+.sec-sub { font-size: 13.5px; color: var(--ink-light); line-height: 1.8; max-width: 480px; margin-top: 12px; }
+.sec-head { margin-bottom: 48px; }
+
+/* ─── PAGE HERO BANNER (inner pages) ─── */
+.page-banner { background: var(--ink); padding: 64px 40px 56px; position: relative; overflow: hidden; }
+.page-banner::before { content:''; position:absolute; inset:0; background-image: linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px); background-size:56px 56px; }
+.page-banner-inner { max-width:1200px; margin:0 auto; position:relative; z-index:1; }
+.page-banner .eyebrow { font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); margin-bottom:14px; display:flex; align-items:center; gap:14px; }
+.page-banner .eyebrow::before { content:''; width:24px; height:1px; background:var(--accent); }
+.page-banner h1 { font-family:var(--serif); font-size:clamp(32px,4vw,52px); font-weight:400; color:var(--white); line-height:1.1; margin-bottom:14px; }
+.page-banner p { font-size:14px; font-weight:300; color:rgba(255,255,255,.5); max-width:480px; line-height:1.8; }
+.breadcrumb { font-size:11px; color:rgba(255,255,255,.3); margin-bottom:20px; display:flex; align-items:center; gap:8px; }
+.breadcrumb a { color:rgba(255,255,255,.45); transition:color .15s; }
+.breadcrumb a:hover { color:rgba(255,255,255,.8); }
+.breadcrumb span { opacity:.4; }
+
+/* ─── HOME PAGE ─── */
+.hero { background:var(--ink); padding:96px 40px 88px; position:relative; overflow:hidden; }
+.hero::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px); background-size:56px 56px; }
+.hero::after { content:''; position:absolute; right:-120px; top:-80px; width:480px; height:480px; border:1px solid rgba(139,111,71,.12); border-radius:50%; }
+.hero-inner { max-width:1200px; margin:0 auto; position:relative; z-index:1; }
+.hero-eyebrow { font-size:10px; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); margin-bottom:22px; display:flex; align-items:center; gap:14px; }
+.hero-eyebrow::before { content:''; width:28px; height:1px; background:var(--accent); }
+.hero h1 { font-family:var(--serif); font-size:clamp(40px,5.5vw,68px); font-weight:400; line-height:1.08; color:var(--white); max-width:660px; margin-bottom:22px; }
+.hero h1 em { color:var(--accent); font-style:italic; }
+.hero p { font-size:15px; font-weight:300; line-height:1.85; color:rgba(255,255,255,.5); max-width:500px; margin-bottom:44px; }
+.hero-btns { display:flex; gap:12px; flex-wrap:wrap; }
+.btn-hero-main { padding:13px 32px; font-size:12px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; background:var(--accent); color:var(--white); border:1px solid var(--accent); border-radius:2px; transition:all .2s; }
+.btn-hero-main:hover { background:transparent; color:var(--accent); }
+.btn-hero-out { padding:13px 32px; font-size:12px; font-weight:400; letter-spacing:.1em; text-transform:uppercase; background:transparent; color:rgba(255,255,255,.6); border:1px solid rgba(255,255,255,.2); border-radius:2px; transition:all .2s; }
+.btn-hero-out:hover { border-color:rgba(255,255,255,.55); color:var(--white); }
+.hero-stats { display:flex; gap:52px; margin-top:60px; padding-top:40px; border-top:1px solid rgba(255,255,255,.08); }
+.st-num { font-family:var(--serif); font-size:36px; font-weight:400; color:var(--white); line-height:1; }
+.st-lbl { font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.3); margin-top:6px; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);} }
+.hero-eyebrow{animation:fadeUp .65s ease .1s backwards;}
+.hero h1{animation:fadeUp .65s ease .2s backwards;}
+.hero p{animation:fadeUp .65s ease .3s backwards;}
+.hero-btns{animation:fadeUp .65s ease .4s backwards;}
+.hero-stats{animation:fadeUp .65s ease .5s backwards;}
+
+/* services */
+.services-section { background:var(--white); }
+.svc-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:0; background:var(--rule); border:1px solid var(--rule); }
+.svc-card { background:var(--white); padding:36px 28px; cursor:pointer; transition:background .2s; }
+.svc-card:hover { background:var(--parchment); }
+.svc-icon { width:38px; height:38px; border:1px solid var(--rule); display:flex; align-items:center; justify-content:center; font-size:17px; margin-bottom:18px; }
+.svc-card h3 { font-family:var(--serif); font-size:19px; font-weight:500; margin-bottom:9px; }
+.svc-card p { font-size:13px; color:var(--ink-light); line-height:1.7; margin-bottom:18px; }
+.svc-link { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); font-weight:500; display:flex; align-items:center; gap:6px; }
+.svc-link::after { content:'→'; }
+
+/* doc tabs (home) */
+.docs-section { background:var(--parchment); }
+.doc-tabs { display:flex; border-bottom:1px solid var(--rule); margin-bottom:38px; }
+.dtab { padding:11px 22px; font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-light); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; transition:all .2s; }
+.dtab.active { color:var(--ink); border-bottom-color:var(--accent); }
+.dtab:hover { color:var(--ink); }
+.docs-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
+.doc-card { background:var(--white); border:1px solid var(--rule); padding:20px 20px 16px; cursor:pointer; transition:all .2s; }
+.doc-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 4px 16px rgba(0,0,0,.06); }
+.doc-tag { font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px; }
+.doc-card h4 { font-family:var(--serif); font-size:15.5px; font-weight:500; color:var(--ink); line-height:1.35; margin-bottom:6px; }
+.doc-price { font-size:12px; color:var(--accent); font-weight:500; }
+
+/* steps */
+.how-section { background:var(--white); }
+.steps { display:grid; grid-template-columns:repeat(4,1fr); gap:0; }
+.step { padding:0 28px; border-right:1px solid var(--rule); }
+.step:first-child { padding-left:0; }
+.step:last-child { border-right:none; }
+.step-n { font-family:var(--serif); font-size:46px; font-weight:400; color:var(--parchment-d); line-height:1; margin-bottom:14px; }
+.step h3 { font-family:var(--serif); font-size:18px; font-weight:500; margin-bottom:9px; }
+.step p { font-size:13px; color:var(--ink-light); line-height:1.75; }
+
+/* pricing (shared) */
+.pricing-section { background:var(--parchment); }
+.price-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+.p-card { background:var(--white); border:1px solid var(--rule); padding:36px 30px; position:relative; }
+.p-card.featured { border:1.5px solid var(--ink); }
+.p-card.featured::before { content:'Most Popular'; position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:var(--ink); color:var(--white); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; padding:3px 14px; }
+.p-tier { font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:12px; }
+.p-amount { font-family:var(--serif); font-size:42px; font-weight:400; color:var(--ink); line-height:1; }
+.p-amount sup { font-size:19px; vertical-align:super; }
+.p-period { font-size:12px; color:var(--ink-faint); margin-top:2px; margin-bottom:18px; }
+.p-desc { font-size:13px; color:var(--ink-light); line-height:1.7; margin-bottom:24px; }
+.p-feats { margin-bottom:28px; }
+.p-feats li { font-size:13px; color:var(--ink-mid); padding:7px 0; border-bottom:1px solid var(--parchment-d); display:flex; align-items:center; gap:10px; }
+.p-feats li::before { content:''; width:4px; height:4px; border:1px solid var(--accent); border-radius:50%; flex-shrink:0; }
+.p-btn { width:100%; padding:11px; font-size:11.5px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; border-radius:2px; border:1px solid var(--ink); background:transparent; color:var(--ink); transition:all .2s; }
+.p-btn:hover { background:var(--ink); color:var(--white); }
+.p-card.featured .p-btn { background:var(--ink); color:var(--white); }
+.p-card.featured .p-btn:hover { background:var(--accent); border-color:var(--accent); }
+
+/* trust */
+.trust-bar { background:#141410; padding:52px 40px; }
+.trust-inner { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:rgba(255,255,255,.06); }
+.trust-item { background:#141410; padding:32px 28px; text-align:center; }
+.trust-ico { font-size:26px; margin-bottom:12px; }
+.trust-item h4 { font-family:var(--serif); font-size:17px; font-weight:400; color:var(--white); margin-bottom:6px; }
+.trust-item p { font-size:12px; color:rgba(255,255,255,.35); line-height:1.65; }
+
+/* testimonials */
+.testi-section { background:var(--white); }
+.testi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+.t-card { background:var(--parchment); border:1px solid var(--rule); padding:28px 26px 22px; }
+.t-stars { color:var(--accent); font-size:13px; letter-spacing:2px; margin-bottom:14px; }
+.t-text { font-family:var(--serif); font-size:16px; font-style:italic; line-height:1.65; color:var(--ink-mid); margin-bottom:18px; }
+.t-name { font-size:13px; font-weight:500; color:var(--ink-mid); }
+.t-role { font-size:11.5px; color:var(--ink-faint); margin-top:2px; }
+
+/* faq */
+.faq-section { background:var(--parchment-d); }
+.faq-list { max-width:700px; }
+.faq-item { border-bottom:1px solid var(--rule); }
+.faq-q { padding:19px 0; font-size:14.5px; color:var(--ink); cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:16px; }
+.faq-toggle { width:22px; height:22px; flex-shrink:0; border:1px solid var(--rule); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; color:var(--ink-faint); transition:all .2s; }
+.faq-item.open .faq-toggle { background:var(--ink); color:var(--white); border-color:var(--ink); }
+.faq-a { max-height:0; overflow:hidden; transition:max-height .3s ease,padding .3s; font-size:13.5px; color:var(--ink-light); line-height:1.8; }
+.faq-item.open .faq-a { max-height:200px; padding-bottom:18px; }
+
+/* ─── BUSINESS / PERSONAL PAGE ─── */
+.cat-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; }
+.cat-section-title { font-family:var(--serif); font-size:22px; font-weight:500; color:var(--ink); margin-bottom:20px; padding-bottom:12px; border-bottom:1px solid var(--rule); display:flex; align-items:center; gap:10px; }
+.cat-section-title span { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint); font-family:var(--sans); }
+.cat-block { margin-bottom:52px; }
+
+/* ─── DOCUMENTS PAGE (full library with filter) ─── */
+.docs-page-wrap { display:grid; grid-template-columns:220px 1fr; gap:40px; align-items:start; }
+.docs-sidebar { position:sticky; top:90px; }
+.sidebar-group { margin-bottom:28px; }
+.sidebar-group h5 { font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:10px; font-weight:500; padding-bottom:8px; border-bottom:1px solid var(--rule); }
+.sidebar-group a { display:block; font-size:13px; color:var(--ink-light); padding:5px 0; transition:color .15s; border-left:2px solid transparent; padding-left:10px; }
+.sidebar-group a:hover, .sidebar-group a.active { color:var(--accent); border-left-color:var(--accent); }
+.docs-main-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
+
+/* ─── DOCUMENT DETAIL PAGE ─── */
+.doc-detail-wrap { display:grid; grid-template-columns:1fr 340px; gap:48px; align-items:start; }
+.doc-detail-body h2 { font-family:var(--serif); font-size:28px; font-weight:400; margin-bottom:16px; }
+.doc-detail-body p { font-size:14px; color:var(--ink-mid); line-height:1.85; margin-bottom:20px; }
+.doc-detail-body ul { margin:0 0 20px 0; }
+.doc-detail-body ul li { font-size:13.5px; color:var(--ink-mid); padding:6px 0; border-bottom:1px solid var(--rule); display:flex; align-items:center; gap:10px; }
+.doc-detail-body ul li::before { content:''; width:4px; height:4px; background:var(--accent); border-radius:50%; flex-shrink:0; }
+.doc-sidebar-card { background:var(--white); border:1px solid var(--rule); padding:28px 24px; position:sticky; top:90px; }
+.doc-sidebar-card .doc-price-big { font-family:var(--serif); font-size:44px; font-weight:400; color:var(--ink); line-height:1; margin-bottom:6px; }
+.doc-sidebar-card .doc-price-big sup { font-size:20px; vertical-align:super; }
+.doc-sidebar-card .doc-price-note { font-size:12px; color:var(--ink-faint); margin-bottom:20px; }
+.doc-buy-btn { width:100%; padding:13px; font-size:12px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; background:var(--ink); color:var(--white); border:1px solid var(--ink); border-radius:2px; margin-bottom:10px; transition:all .2s; }
+.doc-buy-btn:hover { background:var(--accent); border-color:var(--accent); }
+.doc-preview-btn { width:100%; padding:11px; font-size:12px; font-weight:400; letter-spacing:.08em; text-transform:uppercase; background:transparent; color:var(--ink-mid); border:1px solid var(--rule); border-radius:2px; transition:all .2s; }
+.doc-preview-btn:hover { border-color:var(--accent); color:var(--accent); }
+.doc-meta { margin-top:20px; padding-top:18px; border-top:1px solid var(--rule); }
+.doc-meta-row { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--parchment-d); font-size:12.5px; }
+.doc-meta-row span:first-child { color:var(--ink-faint); }
+.doc-meta-row span:last-child { color:var(--ink-mid); font-weight:500; }
+
+/* ─── ABOUT PAGE ─── */
+.about-intro { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+.about-text h2 { font-family:var(--serif); font-size:34px; font-weight:400; line-height:1.2; margin-bottom:18px; }
+.about-text p { font-size:14px; color:var(--ink-mid); line-height:1.9; margin-bottom:16px; }
+.about-visual { background:var(--ink); padding:48px; display:flex; flex-direction:column; gap:24px; }
+.about-stat { border-bottom:1px solid rgba(255,255,255,.08); padding-bottom:20px; }
+.about-stat:last-child { border-bottom:none; padding-bottom:0; }
+.about-stat-n { font-family:var(--serif); font-size:40px; font-weight:400; color:var(--white); line-height:1; }
+.about-stat-l { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.35); margin-top:4px; }
+.team-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:20px; }
+.team-card { background:var(--white); border:1px solid var(--rule); padding:28px 24px; text-align:center; }
+.team-avatar { width:72px; height:72px; border-radius:50%; background:var(--parchment-d); margin:0 auto 16px; display:flex; align-items:center; justify-content:center; font-family:var(--serif); font-size:22px; color:var(--accent); border:1px solid var(--rule); }
+.team-card h4 { font-family:var(--serif); font-size:18px; font-weight:500; margin-bottom:4px; }
+.team-card .role { font-size:11.5px; color:var(--accent); letter-spacing:.06em; margin-bottom:10px; }
+.team-card p { font-size:12.5px; color:var(--ink-light); line-height:1.7; }
+.values-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--rule); border:1px solid var(--rule); }
+.value-item { background:var(--white); padding:32px 28px; }
+.value-num { font-family:var(--serif); font-size:40px; color:var(--parchment-d); line-height:1; margin-bottom:12px; }
+.value-item h3 { font-family:var(--serif); font-size:19px; font-weight:500; margin-bottom:8px; }
+.value-item p { font-size:13px; color:var(--ink-light); line-height:1.7; }
+
+/* ─── PRICING PAGE ─── */
+.pricing-compare { margin-top:60px; overflow-x:auto; }
+.compare-table { width:100%; border-collapse:collapse; }
+.compare-table th { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint); font-weight:500; padding:12px 16px; border-bottom:2px solid var(--rule); text-align:left; }
+.compare-table th:first-child { width:40%; }
+.compare-table td { padding:12px 16px; border-bottom:1px solid var(--rule); font-size:13px; color:var(--ink-mid); }
+.compare-table td:first-child { color:var(--ink); }
+.compare-table tr:hover td { background:var(--parchment); }
+.check { color:var(--accent); font-size:15px; }
+.dash { color:var(--ink-faint); }
+
+/* ─── CONTACT PANEL (modal-style) ─── */
+.contact-section { background:var(--white); }
+.contact-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:start; }
+.contact-info h3 { font-family:var(--serif); font-size:26px; font-weight:400; margin-bottom:16px; }
+.contact-info p { font-size:13.5px; color:var(--ink-light); line-height:1.85; margin-bottom:28px; }
+.c-detail { display:flex; align-items:flex-start; gap:14px; margin-bottom:20px; padding-bottom:20px; border-bottom:1px solid var(--rule); }
+.c-detail:last-child { border-bottom:none; }
+.c-icon { width:36px; height:36px; border:1px solid var(--rule); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:15px; }
+.c-label { font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:3px; }
+.c-val { font-size:13.5px; color:var(--ink-mid); }
+.contact-form { display:flex; flex-direction:column; gap:14px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.form-group { display:flex; flex-direction:column; gap:6px; }
+.form-group label { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint); font-weight:500; }
+.form-group input, .form-group select, .form-group textarea { padding:10px 14px; border:1px solid var(--rule); background:var(--parchment); font-size:13.5px; font-family:var(--sans); color:var(--ink); outline:none; border-radius:2px; transition:border-color .2s; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:var(--accent); background:var(--white); }
+.form-group textarea { resize:vertical; min-height:120px; }
+.form-submit { padding:13px 32px; font-size:12px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; background:var(--ink); color:var(--white); border:1px solid var(--ink); border-radius:2px; align-self:flex-start; transition:all .2s; }
+.form-submit:hover { background:var(--accent); border-color:var(--accent); }
+
+/* ─── FOOTER ─── */
+footer { background:#141410; padding:72px 40px 32px; }
+.footer-inner { max-width:1200px; margin:0 auto; }
+.footer-top { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:44px; padding-bottom:48px; border-bottom:1px solid rgba(255,255,255,.07); margin-bottom:28px; }
+.f-logo { font-family:var(--serif); font-size:20px; font-weight:500; color:var(--white); display:flex; align-items:center; gap:10px; margin-bottom:14px; cursor:pointer; }
+.f-logo em { color:var(--accent); font-style:normal; }
+.f-logo .logo-emblem { border-color:rgba(139,111,71,.4); }
+.f-desc { font-size:12.5px; color:rgba(255,255,255,.32); line-height:1.85; max-width:290px; margin-bottom:22px; }
+.f-contact { font-size:12px; color:rgba(255,255,255,.38); margin-bottom:7px; display:flex; align-items:center; gap:8px; }
+.f-contact span { opacity:.5; }
+.f-col h5 { font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:rgba(255,255,255,.25); margin-bottom:16px; font-weight:500; }
+.f-col a { display:block; font-size:13px; color:rgba(255,255,255,.45); margin-bottom:8px; transition:color .15s; cursor:pointer; }
+.f-col a:hover { color:rgba(255,255,255,.85); }
+.footer-bot { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+.f-copy { font-size:11px; color:rgba(255,255,255,.18); }
+.f-legal { display:flex; gap:22px; }
+.f-legal a { font-size:11px; color:rgba(255,255,255,.22); transition:color .15s; }
+.f-legal a:hover { color:rgba(255,255,255,.6); }
+
+/* ─── MISC ─── */
+.bg-white { background:var(--white); }
+.bg-parchment { background:var(--parchment); }
+.bg-parchment-d { background:var(--parchment-d); }
+.divider { height:1px; background:var(--rule); max-width:1200px; margin:0 auto; }
+.tag-badge { display:inline-block; font-size:10px; letter-spacing:.1em; text-transform:uppercase; padding:3px 10px; border:1px solid var(--rule); color:var(--ink-faint); border-radius:2px; }
+.tag-badge.accent { border-color:var(--accent); color:var(--accent); background:rgba(139,111,71,.06); }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  Support Mon–Fri &nbsp;9:00–17:00
+  <span class="sep">|</span>
+  <a href="#">contact@virtuallegal.com</a>
+  <span class="sep">|</span>
+  +1 800 555 0199
+</div>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo" onclick="goTo('home')">
+      <div class="logo-emblem">⚖</div>
+      Virtual <em>Legal</em> Advisor
+    </div>
+    <ul class="nav-links">
+      <li class="nav-item">
+        <a href="#" id="nav-business" onclick="goTo('business');return false;">Business <span class="chev"></span></a>
+        <div class="dropdown">
+          <div class="dd-col">
+            <h4>Company Formation</h4>
+            <ul>
+              <li><a onclick="openDoc('register-llc')">Register an LLC</a></li>
+              <li><a onclick="openDoc('register-corp')">Register a Corporation</a></li>
+              <li><a onclick="openDoc('register-partnership')">Register a Partnership</a></li>
+              <li><a onclick="openDoc('non-profit')">Non-Profit Formation</a></li>
+              <li><a onclick="openDoc('holding-structure')">Holding Structure</a></li>
+            </ul>
+          </div>
+          <div class="dd-col">
+            <h4>Employees & HR</h4>
+            <ul>
+              <li><a onclick="openDoc('employment-contract')">Employment Contract</a></li>
+              <li><a onclick="openDoc('director-agreement')">Director Agreement</a></li>
+              <li><a onclick="openDoc('nda')">NDA / Confidentiality</a></li>
+              <li><a onclick="openDoc('written-warning')">Written Warning</a></li>
+              <li><a onclick="openDoc('contractor-agreement')">Contractor Agreement</a></li>
+            </ul>
+          </div>
+          <div class="dd-col">
+            <h4>Business Agreements</h4>
+            <ul>
+              <li><a onclick="openDoc('shareholder-agreement')">Shareholder Agreement</a></li>
+              <li><a onclick="openDoc('commercial-lease')">Commercial Lease</a></li>
+              <li><a onclick="openDoc('business-transfer')">Business Transfer</a></li>
+              <li><a onclick="openDoc('loan-agreement')">Loan Agreement</a></li>
+              <li><a onclick="openDoc('service-agreement')">Service Agreement</a></li>
+            </ul>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="#" id="nav-personal" onclick="goTo('personal');return false;">Personal <span class="chev"></span></a>
+        <div class="dropdown">
+          <div class="dd-col">
+            <h4>Family & Estate</h4>
+            <ul>
+              <li><a onclick="openDoc('last-will')">Last Will & Testament</a></li>
+              <li><a onclick="openDoc('power-of-attorney')">Power of Attorney</a></li>
+              <li><a onclick="openDoc('prenuptial')">Prenuptial Agreement</a></li>
+              <li><a onclick="openDoc('living-will')">Living Will</a></li>
+              <li><a onclick="openDoc('trust-formation')">Trust Formation</a></li>
+            </ul>
+          </div>
+          <div class="dd-col">
+            <h4>Property</h4>
+            <ul>
+              <li><a onclick="openDoc('residential-lease')">Residential Lease</a></li>
+              <li><a onclick="openDoc('lease-termination')">Lease Termination</a></li>
+              <li><a onclick="openDoc('property-transfer')">Property Transfer</a></li>
+              <li><a onclick="openDoc('roommate-agreement')">Roommate Agreement</a></li>
+              <li><a onclick="openDoc('sublease')">Sublease Agreement</a></li>
+            </ul>
+          </div>
+          <div class="dd-popular">
+            <h5>Most Popular</h5>
+            <a onclick="openDoc('last-will')">Last Will & Testament</a>
+            <a onclick="openDoc('power-of-attorney')">Power of Attorney</a>
+            <a onclick="openDoc('residential-lease')">Rental Agreement</a>
+            <a onclick="openDoc('prenuptial')">Prenuptial Agreement</a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item"><a href="#" id="nav-documents" onclick="goTo('documents');return false;">Documents</a></li>
+      <li class="nav-item"><a href="#" id="nav-pricing" onclick="goTo('pricing');return false;">Pricing</a></li>
+      <li class="nav-item"><a href="#" id="nav-about" onclick="goTo('about');return false;">About</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="btn-ghost" onclick="goTo('contact')">Log in</button>
+      <button class="btn-solid" onclick="goTo('pricing')">Get Started</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: HOME
+═══════════════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">Professional Legal Services</div>
+      <h1>Law made <em>simple</em>,<br>for everyone.</h1>
+      <p>Access professional legal documents, contracts, and expert guidance — without the complexity or the excessive cost of traditional counsel.</p>
+      <div class="hero-btns">
+        <button class="btn-hero-main" onclick="goTo('documents')">Browse Documents</button>
+        <button class="btn-hero-out" onclick="goTo('contact')">Free Consultation</button>
+      </div>
+      <div class="hero-stats">
+        <div><div class="st-num">50,000+</div><div class="st-lbl">Clients Served</div></div>
+        <div><div class="st-num">200+</div><div class="st-lbl">Legal Documents</div></div>
+        <div><div class="st-num">4.9 / 5</div><div class="st-lbl">Average Rating</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section services-section">
+    <div class="section-inner">
+      <div class="sec-head">
+        <div class="sec-label">What We Offer</div>
+        <h2 class="sec-title">Complete legal support, across every area of your life</h2>
+      </div>
+      <div class="svc-grid">
+        <div class="svc-card" onclick="goTo('documents')">
+          <div class="svc-icon">📋</div>
+          <h3>Legal Documents</h3>
+          <p>Professionally drafted templates for contracts, agreements, and filings — tailored to your jurisdiction.</p>
+          <div class="svc-link">Explore Documents</div>
+        </div>
+        <div class="svc-card" onclick="goTo('business')">
+          <div class="svc-icon">🏛</div>
+          <h3>Business Law</h3>
+          <p>From company formation to shareholder agreements — everything your business needs to operate with confidence.</p>
+          <div class="svc-link">Business Services</div>
+        </div>
+        <div class="svc-card" onclick="goTo('personal')">
+          <div class="svc-icon">👨‍👩‍👧</div>
+          <h3>Personal & Family</h3>
+          <p>Wills, trusts, power of attorney, and family law documents handled with sensitivity and precision.</p>
+          <div class="svc-link">Personal Services</div>
+        </div>
+        <div class="svc-card" onclick="goTo('documents')">
+          <div class="svc-icon">🏠</div>
+          <h3>Property & Real Estate</h3>
+          <p>Rental agreements, lease terminations, and property transfers — legally sound in every state.</p>
+          <div class="svc-link">Property Documents</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section docs-section">
+    <div class="section-inner">
+      <div class="sec-head">
+        <div class="sec-label">Document Library</div>
+        <h2 class="sec-title">Find the exact document you need</h2>
+        <p class="sec-sub">All documents are drafted by qualified attorneys and kept up to date with current legislation.</p>
+      </div>
+      <div class="doc-tabs">
+        <div class="dtab active" onclick="switchTab(this,'business')">Business</div>
+        <div class="dtab" onclick="switchTab(this,'personal')">Personal</div>
+        <div class="dtab" onclick="switchTab(this,'property')">Property</div>
+        <div class="dtab" onclick="switchTab(this,'employment')">Employment</div>
+      </div>
+      <div class="docs-grid" id="home-docs-grid"></div>
+    </div>
+  </section>
+
+  <section class="section how-section">
+    <div class="section-inner">
+      <div class="sec-head">
+        <div class="sec-label">The Process</div>
+        <h2 class="sec-title">From question to document in minutes</h2>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="step-n">01</div><h3>Choose your document</h3><p>Browse 200+ legal templates, organised by category and jurisdiction.</p></div>
+        <div class="step"><div class="step-n">02</div><h3>Answer guided questions</h3><p>Our adaptive form tailors every document to your exact situation.</p></div>
+        <div class="step"><div class="step-n">03</div><h3>Review & customise</h3><p>Preview your document in real-time and refine any section with expert tips.</p></div>
+        <div class="step"><div class="step-n">04</div><h3>Download & use</h3><p>Receive a professional PDF or Word file, ready to sign and execute.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section pricing-section">
+    <div class="section-inner">
+      <div class="sec-head">
+        <div class="sec-label">Pricing</div>
+        <h2 class="sec-title">Transparent pricing, no hidden fees</h2>
+        <p class="sec-sub">All plans include our full document library. <a style="color:var(--accent)" onclick="goTo('pricing')">See full comparison →</a></p>
+      </div>
+      <div class="price-grid">
+        <div class="p-card">
+          <div class="p-tier">Essential</div>
+          <div class="p-amount"><sup>$</sup>9</div>
+          <div class="p-period">per month, billed annually</div>
+          <div class="p-desc">Perfect for individuals who need occasional legal documents.</div>
+          <ul class="p-feats"><li>5 documents / month</li><li>PDF & Word export</li><li>Email support</li><li>1 year storage</li></ul>
+          <button class="p-btn" onclick="goTo('pricing')">Get Started</button>
+        </div>
+        <div class="p-card featured">
+          <div class="p-tier">Professional</div>
+          <div class="p-amount"><sup>$</sup>29</div>
+          <div class="p-period">per month, billed annually</div>
+          <div class="p-desc">Ideal for freelancers, consultants, and small businesses.</div>
+          <ul class="p-feats"><li>Unlimited documents</li><li>Priority support</li><li>E-signature</li><li>5 year storage</li><li>Attorney review (2/mo)</li></ul>
+          <button class="p-btn" onclick="goTo('pricing')">Get Started</button>
+        </div>
+        <div class="p-card">
+          <div class="p-tier">Enterprise</div>
+          <div class="p-amount" style="font-size:28px;padding-top:6px">Custom</div>
+          <div class="p-period">tailored to your organisation</div>
+          <div class="p-desc">Comprehensive legal coverage for growing businesses and teams.</div>
+          <ul class="p-feats"><li>Unlimited users</li><li>Dedicated counsel</li><li>Custom templates</li><li>API access</li></ul>
+          <button class="p-btn" onclick="goTo('contact')">Contact Sales</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="trust-bar">
+    <div class="trust-inner">
+      <div class="trust-item"><div class="trust-ico">🔒</div><h4>Fully Secure</h4><p>Bank-level encryption for all your documents and data.</p></div>
+      <div class="trust-item"><div class="trust-ico">⚖</div><h4>Attorney Drafted</h4><p>Every template reviewed by licensed legal professionals.</p></div>
+      <div class="trust-item"><div class="trust-ico">✓</div><h4>Always Current</h4><p>Documents updated to reflect the latest legislation.</p></div>
+      <div class="trust-item"><div class="trust-ico">★</div><h4>Trusted by 50,000+</h4><p>Rated 4.9/5 by clients across the country.</p></div>
+    </div>
+  </div>
+
+  <section class="section testi-section">
+    <div class="section-inner">
+      <div class="sec-head">
+        <div class="sec-label">Client Reviews</div>
+        <h2 class="sec-title">What our clients say</h2>
+      </div>
+      <div class="testi-grid">
+        <div class="t-card"><div class="t-stars">★★★★★</div><div class="t-text">"I needed an employment contract urgently. Virtual Legal Advisor had exactly what I needed — professional, clear, and ready in minutes."</div><div class="t-name">James Hartley</div><div class="t-role">CEO, Hartley & Partners</div></div>
+        <div class="t-card"><div class="t-stars">★★★★★</div><div class="t-text">"Drafting my will was something I'd been putting off for years. This service made it genuinely simple and stress-free."</div><div class="t-name">Rebecca Osei</div><div class="t-role">Freelance Consultant</div></div>
+        <div class="t-card"><div class="t-stars">★★★★★</div><div class="t-text">"Having access to quality legal templates at this price is remarkable. It's saved us thousands in legal fees already."</div><div class="t-name">Marcus Webb</div><div class="t-role">Founder, Webb Creative Studio</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section faq-section">
+    <div class="section-inner">
+      <div class="sec-head">
+        <div class="sec-label">FAQ</div>
+        <h2 class="sec-title">Frequently asked questions</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Are your legal documents legally binding? <span class="faq-toggle">+</span></div><div class="faq-a">Yes. All documents are drafted by qualified attorneys and are legally valid and enforceable when properly completed and executed according to relevant jurisdiction requirements.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Can I modify a document after downloading it? <span class="faq-toggle">+</span></div><div class="faq-a">Absolutely. All documents come in both PDF and editable Word format. You can customise any section — we recommend having a solicitor review significant modifications.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Which jurisdictions do you cover? <span class="faq-toggle">+</span></div><div class="faq-a">We currently cover all 50 US states, the United Kingdom, Canada, and Australia. Documents are jurisdiction-specific and updated regularly.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Is there a free trial available? <span class="faq-toggle">+</span></div><div class="faq-a">Yes — 7-day free trial on all plans. No credit card required. Download up to 3 documents during the trial.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">How is my data kept secure? <span class="faq-toggle">+</span></div><div class="faq-a">256-bit AES encryption for stored data, TLS 1.3 in transit. We never share your documents or personal information with third parties.</div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: BUSINESS
+═══════════════════════════════════════════════════ -->
+<div class="page" id="page-business">
+  <div class="page-banner">
+    <div class="page-banner-inner">
+      <div class="breadcrumb"><a onclick="goTo('home')">Home</a><span>/</span>Business</div>
+      <div class="eyebrow">Business Law</div>
+      <h1>Business Legal Services</h1>
+      <p>Everything your business needs — from formation to protection. Professionally drafted, attorney-reviewed documents for every stage of your company.</p>
+    </div>
+  </div>
+  <section class="section bg-white">
+    <div class="section-inner">
+      <div class="cat-block">
+        <div class="cat-section-title">Company Formation <span>5 documents</span></div>
+        <div class="cat-grid" id="biz-formation"></div>
+      </div>
+      <div class="cat-block">
+        <div class="cat-section-title">Employees & HR <span>6 documents</span></div>
+        <div class="cat-grid" id="biz-hr"></div>
+      </div>
+      <div class="cat-block">
+        <div class="cat-section-title">Business Agreements <span>5 documents</span></div>
+        <div class="cat-grid" id="biz-agreements"></div>
+      </div>
+      <div class="cat-block" style="margin-bottom:0">
+        <div class="cat-section-title">Administration <span>4 documents</span></div>
+        <div class="cat-grid" id="biz-admin"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: PERSONAL
+═══════════════════════════════════════════════════ -->
+<div class="page" id="page-personal">
+  <div class="page-banner">
+    <div class="page-banner-inner">
+      <div class="breadcrumb"><a onclick="goTo('home')">Home</a><span>/</span>Personal</div>
+      <div class="eyebrow">Personal Law</div>
+      <h1>Personal Legal Services</h1>
+      <p>Protect what matters most. From estate planning to family agreements — comprehensive personal legal documents handled with care.</p>
+    </div>
+  </div>
+  <section class="section bg-white">
+    <div class="section-inner">
+      <div class="cat-block">
+        <div class="cat-section-title">Family & Estate <span>5 documents</span></div>
+        <div class="cat-grid" id="per-estate"></div>
+      </div>
+      <div class="cat-block">
+        <div class="cat-section-title">Property <span>5 documents</span></div>
+        <div class="cat-grid" id="per-property"></div>
+      </div>
+      <div class="cat-block" style="margin-bottom:0">
+        <div class="cat-section-title">Financial & Loans <span>3 documents</span></div>
+        <div class="cat-grid" id="per-financial"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: DOCUMENTS (full library)
+═══════════════════════════════════════════════════ -->
+<div class="page" id="page-documents">
+  <div class="page-banner">
+    <div class="page-banner-inner">
+      <div class="breadcrumb"><a onclick="goTo('home')">Home</a><span>/</span>Documents</div>
+      <div class="eyebrow">Document Library</div>
+      <h1>All Legal Documents</h1>
+      <p>Over 200 attorney-drafted legal document templates, organised by category. Updated regularly to reflect current law.</p>
+    </div>
+  </div>
+  <section class="section bg-parchment">
+    <div class="section-inner">
+      <div class="docs-page-wrap">
+        <aside class="docs-sidebar">
+          <div class="sidebar-group">
+            <h5>Business</h5>
+            <a onclick="filterDocs('all-business')" class="active" id="filter-all-business">All Business</a>
+            <a onclick="filterDocs('formation')" id="filter-formation">Company Formation</a>
+            <a onclick="filterDocs('hr')" id="filter-hr">Employees & HR</a>
+            <a onclick="filterDocs('bizagreements')" id="filter-bizagreements">Business Agreements</a>
+          </div>
+          <div class="sidebar-group">
+            <h5>Personal</h5>
+            <a onclick="filterDocs('all-personal')" id="filter-all-personal">All Personal</a>
+            <a onclick="filterDocs('estate')" id="filter-estate">Estate & Wills</a>
+            <a onclick="filterDocs('property')" id="filter-property">Property</a>
+            <a onclick="filterDocs('family')" id="filter-family">Family</a>
+          </div>
+          <div class="sidebar-group">
+            <h5>Employment</h5>
+            <a onclick="filterDocs('employment')" id="filter-employment">All Employment</a>
+          </div>
+        </aside>
+        <div>
+          <div class="docs-main-grid" id="docs-main-grid"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: PRICING
+═══════════════════════════════════════════════════ -->
+<div class="page" id="page-pricing">
+  <div class="page-banner">
+    <div class="page-banner-inner">
+      <div class="breadcrumb"><a onclick="goTo('home')">Home</a><span>/</span>Pricing</div>
+      <div class="eyebrow">Pricing Plans</div>
+      <h1>Simple, Transparent Pricing</h1>
+      <p>No hidden fees. No surprises. Choose the plan that fits your needs and upgrade anytime.</p>
+    </div>
+  </div>
+  <section class="section pricing-section">
+    <div class="section-inner">
+      <div class="price-grid">
+        <div class="p-card">
+          <div class="p-tier">Essential</div>
+          <div class="p-amount"><sup>$</sup>9</div>
+          <div class="p-period">per month, billed annually — or $12/mo monthly</div>
+          <div class="p-desc">Perfect for individuals who need occasional legal documents.</div>
+          <ul class="p-feats"><li>5 documents per month</li><li>PDF & Word export</li><li>Email support</li><li>Document storage (1 year)</li><li>Basic templates</li></ul>
+          <button class="p-btn">Start Free Trial</button>
+        </div>
+        <div class="p-card featured">
+          <div class="p-tier">Professional</div>
+          <div class="p-amount"><sup>$</sup>29</div>
+          <div class="p-period">per month, billed annually — or $35/mo monthly</div>
+          <div class="p-desc">Ideal for freelancers, consultants, and small businesses.</div>
+          <ul class="p-feats"><li>Unlimited documents</li><li>Priority support</li><li>E-signature integration</li><li>Document storage (5 years)</li><li>Attorney review (2/month)</li><li>All jurisdictions</li></ul>
+          <button class="p-btn">Start Free Trial</button>
+        </div>
+        <div class="p-card">
+          <div class="p-tier">Enterprise</div>
+          <div class="p-amount" style="font-size:28px;padding-top:8px">Custom</div>
+          <div class="p-period">tailored to your organisation</div>
+          <div class="p-desc">Comprehensive legal coverage for growing businesses and teams.</div>
+          <ul class="p-feats"><li>Unlimited documents & users</li><li>Dedicated legal counsel</li><li>Custom templates</li><li>API access</li><li>Compliance dashboard</li><li>SLA guarantee</li></ul>
+          <button class="p-btn" onclick="goTo('contact')">Contact Sales</button>
+        </div>
+      </div>
+
+      <div class="pricing-compare">
+        <div class="sec-head" style="margin-top:60px;margin-bottom:24px">
+          <div class="sec-label">Compare Plans</div>
+          <h2 class="sec-title">Full feature comparison</h2>
+        </div>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Essential</th>
+              <th>Professional</th>
+              <th>Enterprise</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Monthly documents</td><td>5</td><td>Unlimited</td><td>Unlimited</td></tr>
+            <tr><td>PDF & Word export</td><td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+            <tr><td>E-signature integration</td><td><span class="dash">—</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+            <tr><td>Document storage</td><td>1 year</td><td>5 years</td><td>Unlimited</td></tr>
+            <tr><td>Attorney review</td><td><span class="dash">—</span></td><td>2/month</td><td>Unlimited</td></tr>
+            <tr><td>Priority support</td><td><span class="dash">—</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+            <tr><td>Custom templates</td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="check">✓</span></td></tr>
+            <tr><td>API access</td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="check">✓</span></td></tr>
+            <tr><td>Compliance dashboard</td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="check">✓</span></td></tr>
+            <tr><td>Team members</td><td>1</td><td>Up to 5</td><td>Unlimited</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <div class="trust-bar">
+    <div class="trust-inner">
+      <div class="trust-item"><div class="trust-ico">🔒</div><h4>Fully Secure</h4><p>Bank-level encryption for all your documents and data.</p></div>
+      <div class="trust-item"><div class="trust-ico">↩</div><h4>7-Day Free Trial</h4><p>Try any plan free for 7 days. Cancel anytime.</p></div>
+      <div class="trust-item"><div class="trust-ico">☎</div><h4>Dedicated Support</h4><p>Real humans ready to help, Mon–Fri 9–5.</p></div>
+      <div class="trust-item"><div class="trust-ico">★</div><h4>No Hidden Fees</h4><p>What you see is what you pay. No surprises.</p></div>
+    </div>
+  </div>
+
+  <section class="section faq-section">
+    <div class="section-inner">
+      <div class="sec-head"><div class="sec-label">Pricing FAQ</div><h2 class="sec-title">Common pricing questions</h2></div>
+      <div class="faq-list">
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Can I cancel my plan at any time? <span class="faq-toggle">+</span></div><div class="faq-a">Yes. You can cancel your subscription at any time. If you cancel an annual plan, you retain access until the end of your billing period.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What payment methods do you accept? <span class="faq-toggle">+</span></div><div class="faq-a">We accept all major credit and debit cards (Visa, Mastercard, Amex), as well as PayPal and bank transfers for Enterprise plans.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Is the 7-day trial really free? <span class="faq-toggle">+</span></div><div class="faq-a">Yes, completely free. No credit card required to start. You can download up to 3 documents during your trial period.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Do unused documents roll over? <span class="faq-toggle">+</span></div><div class="faq-a">No — unused documents do not roll over to the next month. We recommend upgrading to Professional for unlimited access if you use documents frequently.</div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: ABOUT
+═══════════════════════════════════════════════════ -->
+<div class="page" id="page-about">
+  <div class="page-banner">
+    <div class="page-banner-inner">
+      <div class="breadcrumb"><a onclick="goTo('home')">Home</a><span>/</span>About</div>
+      <div class="eyebrow">Our Story</div>
+      <h1>About Virtual Legal Advisor</h1>
+      <p>We believe quality legal advice should be accessible to everyone — not just those who can afford expensive law firms.</p>
+    </div>
+  </div>
+
+  <section class="section bg-white">
+    <div class="section-inner">
+      <div class="about-intro">
+        <div class="about-text">
+          <div class="sec-label">Our Mission</div>
+          <h2 class="sec-title" style="max-width:100%">Making the law work for everyone</h2>
+          <p style="margin-top:20px">Founded in 2018, Virtual Legal Advisor was born from a simple frustration: legal help was either too expensive, too slow, or too complicated for ordinary people and small businesses.</p>
+          <p>We built a platform where anyone can access professionally drafted legal documents, guided by smart technology and backed by a team of qualified attorneys — at a fraction of the traditional cost.</p>
+          <p>Today, we serve over 50,000 clients across the US, UK, Canada, and Australia. Our library covers 200+ document types, all kept current with the latest legislation in every jurisdiction we operate in.</p>
+          <button class="p-btn" style="max-width:200px;margin-top:8px" onclick="goTo('contact')">Get in Touch</button>
+        </div>
+        <div class="about-visual">
+          <div class="about-stat"><div class="about-stat-n">2018</div><div class="about-stat-l">Founded</div></div>
+          <div class="about-stat"><div class="about-stat-n">50,000+</div><div class="about-stat-l">Clients Served</div></div>
+          <div class="about-stat"><div class="about-stat-n">200+</div><div class="about-stat-l">Document Templates</div></div>
+          <div class="about-stat"><div class="about-stat-n">4</div><div class="about-stat-l">Countries Covered</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-parchment">
+    <div class="section-inner">
+      <div class="sec-head"><div class="sec-label">Our Values</div><h2 class="sec-title">What we stand for</h2></div>
+      <div class="values-grid">
+        <div class="value-item"><div class="value-num">01</div><h3>Accessibility</h3><p>Legal support should not be a luxury. We price our services so that individuals and small businesses can afford the same quality as large corporations.</p></div>
+        <div class="value-item"><div class="value-num">02</div><h3>Integrity</h3><p>Every document on our platform is reviewed by a licensed attorney. We never cut corners on legal quality — your protection depends on it.</p></div>
+        <div class="value-item"><div class="value-num">03</div><h3>Simplicity</h3><p>Law is complex by nature. Our job is to make it simple. We translate legal jargon into plain language so you always know what you're signing.</p></div>
+        <div class="value-item"><div class="value-num">04</div><h3>Privacy</h3><p>Your legal matters are personal. We use bank-level encryption and never share your data with third parties — ever.</p></div>
+        <div class="value-item"><div class="value-num">05</div><h3>Currency</h3><p>Laws change. We monitor legislation across all our jurisdictions and update documents promptly so you're always compliant.</p></div>
+        <div class="value-item"><div class="value-num">06</div><h3>Support</h3><p>We're here when you need us. Real humans, not bots — available by phone, chat, and email throughout the working week.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-white">
+    <div class="section-inner">
+      <div class="sec-head"><div class="sec-label">Our Team</div><h2 class="sec-title">Meet the attorneys behind our platform</h2></div>
+      <div class="team-grid">
+        <div class="team-card"><div class="team-avatar">SH</div><h4>Sarah Hammond</h4><div class="role">Head of Legal</div><p>15 years' experience in corporate and contract law. Harvard Law, Class of 2009.</p></div>
+        <div class="team-card"><div class="team-avatar">MR</div><h4>Michael Reeves</h4><div class="role">Business Law Lead</div><p>Specialist in company formation and commercial agreements. NYU School of Law.</p></div>
+        <div class="team-card"><div class="team-avatar">AL</div><h4>Amara Lewis</h4><div class="role">Family Law Advisor</div><p>Dedicated to making estate and family law accessible for everyone.</p></div>
+        <div class="team-card"><div class="team-avatar">DC</div><h4>Daniel Chen</h4><div class="role">Property Law Specialist</div><p>Expert in residential and commercial property agreements across all 50 states.</p></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: CONTACT
+═══════════════════════════════════════════════════ -->
+<div class="page" id="page-contact">
+  <div class="page-banner">
+    <div class="page-banner-inner">
+      <div class="breadcrumb"><a onclick="goTo('home')">Home</a><span>/</span>Contact</div>
+      <div class="eyebrow">Get in Touch</div>
+      <h1>Contact Us</h1>
+      <p>Questions about a document? Need help choosing a plan? Our team is ready to help.</p>
+    </div>
+  </div>
+  <section class="section contact-section">
+    <div class="section-inner">
+      <div class="contact-grid">
+        <div class="contact-info">
+          <h3>We're here to help</h3>
+          <p>Whether you need guidance on a specific legal matter, want to discuss our plans, or simply have a question about our documents — don't hesitate to reach out.</p>
+          <div class="c-detail"><div class="c-icon">✉</div><div><div class="c-label">Email</div><div class="c-val">contact@virtuallegal.com</div></div></div>
+          <div class="c-detail"><div class="c-icon">☎</div><div><div class="c-label">Phone</div><div class="c-val">+1 800 555 0199</div></div></div>
+          <div class="c-detail"><div class="c-icon">◷</div><div><div class="c-label">Hours</div><div class="c-val">Monday – Friday, 9:00 AM – 5:00 PM EST</div></div></div>
+          <div class="c-detail" style="border-bottom:none"><div class="c-icon">💬</div><div><div class="c-label">Live Chat</div><div class="c-val">Available during support hours</div></div></div>
+        </div>
+        <div>
+          <div class="contact-form">
+            <div class="form-row">
+              <div class="form-group"><label>First Name</label><input type="text" placeholder="James"></div>
+              <div class="form-group"><label>Last Name</label><input type="text" placeholder="Hartley"></div>
+            </div>
+            <div class="form-group"><label>Email Address</label><input type="email" placeholder="james@example.com"></div>
+            <div class="form-group"><label>Subject</label>
+              <select>
+                <option>General Enquiry</option>
+                <option>Document Question</option>
+                <option>Billing & Plans</option>
+                <option>Technical Support</option>
+                <option>Enterprise Sales</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Message</label><textarea placeholder="Tell us how we can help..."></textarea></div>
+            <button class="form-submit">Send Message</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PAGE: DOCUMENT DETAIL
+═══════════════════════════════════════════════════ -->
+<div class="page" id="page-doc-detail">
+  <div class="page-banner">
+    <div class="page-banner-inner">
+      <div class="breadcrumb" id="doc-breadcrumb">
+        <a onclick="goTo('home')">Home</a><span>/</span>
+        <a id="doc-bc-parent" onclick="">Documents</a><span>/</span>
+        <span id="doc-bc-name">Document</span>
+      </div>
+      <div class="eyebrow" id="doc-detail-tag">Legal Document</div>
+      <h1 id="doc-detail-title">Document Title</h1>
+    </div>
+  </div>
+  <section class="section bg-parchment">
+    <div class="section-inner">
+      <div class="doc-detail-wrap">
+        <div class="doc-detail-body">
+          <h2 id="doc-detail-subtitle">What is this document?</h2>
+          <p id="doc-detail-desc"></p>
+          <h2 style="margin-top:32px">What's included</h2>
+          <ul id="doc-detail-includes"></ul>
+          <h2 style="margin-top:32px">Who needs this?</h2>
+          <p id="doc-detail-who"></p>
+        </div>
+        <div>
+          <div class="doc-sidebar-card">
+            <div class="doc-price-big" id="doc-detail-price"><sup>$</sup>29</div>
+            <div class="doc-price-note">One-time purchase · Instant download</div>
+            <button class="doc-buy-btn">Purchase Document</button>
+            <button class="doc-preview-btn">Preview Sample</button>
+            <div class="doc-meta">
+              <div class="doc-meta-row"><span>Format</span><span>PDF & Word (.docx)</span></div>
+              <div class="doc-meta-row"><span>Pages</span><span id="doc-detail-pages">4–6 pages</span></div>
+              <div class="doc-meta-row"><span>Jurisdiction</span><span>All 50 US States</span></div>
+              <div class="doc-meta-row"><span>Last Updated</span><span>March 2025</span></div>
+              <div class="doc-meta-row"><span>Attorney Reviewed</span><span>✓ Yes</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     FOOTER (shared)
+═══════════════════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="f-logo" onclick="goTo('home')">
+          <div class="logo-emblem">⚖</div>
+          Virtual <em>Legal</em> Advisor
+        </div>
+        <div class="f-desc">Professional legal services made accessible. Everyone deserves quality legal support — at a fair price.</div>
+        <div class="f-contact"><span>✉</span> contact@virtuallegal.com</div>
+        <div class="f-contact"><span>☎</span> +1 800 555 0199</div>
+        <div class="f-contact"><span>◷</span> Mon–Fri, 9:00 AM – 5:00 PM</div>
+      </div>
+      <div class="f-col">
+        <h5>Business</h5>
+        <a onclick="openDoc('register-llc')">Register an LLC</a>
+        <a onclick="openDoc('employment-contract')">Employment Contract</a>
+        <a onclick="openDoc('shareholder-agreement')">Shareholder Agreement</a>
+        <a onclick="openDoc('nda')">NDA / Confidentiality</a>
+        <a onclick="openDoc('business-transfer')">Business Transfer</a>
+      </div>
+      <div class="f-col">
+        <h5>Personal</h5>
+        <a onclick="openDoc('last-will')">Will & Testament</a>
+        <a onclick="openDoc('power-of-attorney')">Power of Attorney</a>
+        <a onclick="openDoc('prenuptial')">Prenuptial Agreement</a>
+        <a onclick="openDoc('residential-lease')">Rental Agreement</a>
+        <a onclick="openDoc('living-will')">Living Will</a>
+      </div>
+      <div class="f-col">
+        <h5>Company</h5>
+        <a onclick="goTo('about')">About Us</a>
+        <a onclick="goTo('about')">Our Attorneys</a>
+        <a onclick="goTo('pricing')">Pricing</a>
+        <a onclick="goTo('contact')">Contact</a>
+      </div>
+    </div>
+    <div class="footer-bot">
+      <div class="f-copy">© 2025 Virtual Legal Advisor. All rights reserved.</div>
+      <div class="f-legal"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Cookie Policy</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ─────────────────────────────────────────────────────
+   DATA
+───────────────────────────────────────────────────── */
+const allDocs = {
+  'register-llc':          { title:'Register an LLC',          tag:'Formation', cat:'formation', price:'$29', pages:'3–5', desc:'A Limited Liability Company (LLC) provides personal liability protection and flexible tax treatment. This document package guides you through the complete LLC registration process.',  includes:['Articles of Organization','Operating Agreement','Registered Agent Designation','Member Certificate','Initial Resolution'], who:'Entrepreneurs starting a new business who want liability protection without the complexity of a corporation.' },
+  'register-corp':         { title:'Register a Corporation',   tag:'Formation', cat:'formation', price:'$39', pages:'5–8', desc:'Incorporate your business as a C-Corp or S-Corp. Gain access to equity financing, employee stock options, and established legal protections.',  includes:['Articles of Incorporation','Corporate Bylaws','Stock Certificate Templates','Organizational Minutes','Shareholder Register'], who:'Startups seeking investment and established businesses looking for formal corporate structure.' },
+  'register-partnership':  { title:'Register a Partnership',   tag:'Formation', cat:'formation', price:'$24', pages:'4–6', desc:'Formalise a general or limited partnership with a comprehensive partnership agreement that protects all parties.',  includes:['Partnership Agreement','Capital Contribution Schedule','Profit Distribution Rules','Dissolution Provisions'], who:'Two or more individuals starting a business together who want clearly defined roles and responsibilities.' },
+  'non-profit':            { title:'Non-Profit Formation',     tag:'Formation', cat:'formation', price:'$49', pages:'6–10', desc:'Establish a 501(c)(3) non-profit organisation with all required formation documents and compliance materials.',  includes:['Articles of Incorporation','Bylaws','Conflict of Interest Policy','IRS 501(c)(3) Application Guide'], who:'Founders of charitable, educational, or community organisations seeking tax-exempt status.' },
+  'holding-structure':     { title:'Holding Structure',        tag:'Formation', cat:'formation', price:'$59', pages:'8–12', desc:'Set up a parent holding company with one or more operating subsidiaries. Ideal for asset protection and tax efficiency.',  includes:['Holding Company Formation Documents','Subsidiary Operating Agreement','Intercompany Loan Agreement'], who:'Business owners with multiple companies or significant assets who want structural separation.' },
+  'employment-contract':   { title:'Employment Contract',      tag:'HR', cat:'hr', price:'$29', pages:'4–6', desc:'A legally binding employment agreement covering compensation, duties, benefits, and termination terms — compliant in all 50 states.',  includes:['Position & Duties Clause','Compensation & Benefits','Confidentiality Obligations','Termination Provisions','Non-Compete Clause (optional)'], who:'Employers hiring full-time or part-time staff who need a professional, enforceable contract.' },
+  'director-agreement':    { title:'Director Agreement',       tag:'HR', cat:'hr', price:'$39', pages:'5–7', desc:'A comprehensive agreement for appointing a company director, covering fiduciary duties, compensation, and indemnification.',  includes:['Appointment Terms','Duties & Responsibilities','Compensation Structure','D&O Indemnification','Termination Clause'], who:'Companies appointing executive directors or CEOs who need clearly defined terms of engagement.' },
+  'nda':                   { title:'NDA / Confidentiality',    tag:'Agreements', cat:'bizagreements', price:'$19', pages:'2–3', desc:'Protect your sensitive business information with a mutual or one-way non-disclosure agreement.',  includes:['Definition of Confidential Information','Obligations of Receiving Party','Exclusions','Term & Termination','Remedies Clause'], who:'Businesses sharing sensitive information with partners, contractors, or potential investors.' },
+  'written-warning':       { title:'Written Warning Letter',   tag:'HR', cat:'hr', price:'$15', pages:'1–2', desc:'A formal written warning for employee misconduct or performance issues — essential for disciplinary procedures.',  includes:['Description of Issue','Expected Improvement','Timeline','Consequences of Non-Compliance'], who:'Employers who need to formally document a disciplinary issue before escalating action.' },
+  'contractor-agreement':  { title:'Contractor Agreement',     tag:'HR', cat:'hr', price:'$24', pages:'3–5', desc:'Define the terms of a freelance or independent contractor engagement, including scope, payment, and IP ownership.',  includes:['Scope of Work','Payment Terms','IP Assignment Clause','Independent Contractor Status','Termination'], who:'Businesses engaging freelancers or consultants who need clear engagement terms.' },
+  'shareholder-agreement': { title:'Shareholder Agreement',    tag:'Agreements', cat:'bizagreements', price:'$39', pages:'6–10', desc:'Govern the relationship between company shareholders, including rights, obligations, and share transfer restrictions.',  includes:['Shareholder Rights','Voting Provisions','Dividend Policy','Transfer Restrictions','Dispute Resolution'], who:'Companies with multiple shareholders who need formal governance and protections in place.' },
+  'commercial-lease':      { title:'Commercial Lease',         tag:'Agreements', cat:'bizagreements', price:'$29', pages:'5–8', desc:'A comprehensive commercial property lease agreement for office, retail, or warehouse space.',  includes:['Premises Description','Rent & Review Schedule','Permitted Use','Repair & Maintenance','Break Clause'], who:'Business owners renting commercial premises or landlords letting to business tenants.' },
+  'business-transfer':     { title:'Business Transfer Deed',   tag:'Agreements', cat:'bizagreements', price:'$49', pages:'6–9', desc:'Transfer the ownership of a business including assets, liabilities, and goodwill with legal protection for both parties.',  includes:['Asset Schedule','Liability Allocation','Warranties & Representations','Employees Transfer','Completion Conditions'], who:'Business buyers and sellers seeking a clean, legally sound transfer of ownership.' },
+  'loan-agreement':        { title:'Loan Agreement',           tag:'Finance', cat:'bizagreements', price:'$29', pages:'3–5', desc:'A formal loan agreement between a lender and borrower, covering repayment terms, interest, and default provisions.',  includes:['Loan Amount & Purpose','Interest Rate','Repayment Schedule','Default Provisions','Security Clause'], who:'Businesses or individuals lending or borrowing money who need a legally enforceable record.' },
+  'service-agreement':     { title:'Service Agreement',        tag:'Agreements', cat:'bizagreements', price:'$24', pages:'3–5', desc:'A clear service contract between a service provider and client, defining deliverables, payment, and liability.',  includes:['Scope of Services','Payment Terms','Intellectual Property','Limitation of Liability','Termination'], who:'Consultants, agencies, and service businesses engaging clients on a project or retainer basis.' },
+  'last-will':             { title:'Last Will & Testament',    tag:'Estate', cat:'estate', price:'$29', pages:'4–7', desc:'Ensure your assets are distributed according to your wishes after you pass. A valid will prevents disputes and protects your loved ones.',  includes:['Executor Appointment','Asset Distribution','Guardian Designation (minors)','Residuary Estate','Attestation Clause'], who:'Any adult who wants to ensure their estate is handled according to their wishes.' },
+  'power-of-attorney':     { title:'Power of Attorney',        tag:'Authority', cat:'estate', price:'$19', pages:'2–4', desc:'Authorise a trusted person to make legal, financial, or medical decisions on your behalf if you become unable to do so.',  includes:['Principal & Agent Details','Scope of Authority','Durability Clause','Revocation Terms','Acceptance Signature'], who:'Adults who want to designate someone they trust to act on their behalf in specific circumstances.' },
+  'prenuptial':            { title:'Prenuptial Agreement',     tag:'Family', cat:'family', price:'$39', pages:'4–7', desc:'Establish clear financial agreements before marriage, protecting both parties and avoiding potential disputes.',  includes:['Asset Disclosure','Pre-Marital Property Protection','Debt Allocation','Spousal Support Waiver','Sunset Clause'], who:'Couples planning to marry who want to protect their individual assets and financial interests.' },
+  'living-will':           { title:'Living Will / Advance Directive', tag:'Estate', cat:'estate', price:'$19', pages:'2–3', desc:'Document your wishes regarding medical treatment if you are unable to communicate — giving you control over end-of-life care decisions.',  includes:['Healthcare Wishes','Life-Sustaining Treatment','Pain Management Preferences','Healthcare Proxy Designation'], who:'Any adult who wants to ensure their medical wishes are respected if they cannot speak for themselves.' },
+  'trust-formation':       { title:'Living Trust',             tag:'Estate', cat:'estate', price:'$49', pages:'6–10', desc:'Avoid probate and transfer assets to beneficiaries efficiently with a revocable living trust.',  includes:['Trust Declaration','Trustee Appointment','Asset Schedule','Successor Trustee','Distribution Instructions'], who:'Individuals with significant assets who want to simplify inheritance and avoid the probate process.' },
+  'residential-lease':     { title:'Residential Lease',        tag:'Property', cat:'property', price:'$19', pages:'4–6', desc:'A legally sound residential rental agreement for landlords and tenants, covering all essential terms.',  includes:['Property Description','Rent & Deposit Terms','Tenant Obligations','Landlord Obligations','Renewal & Termination'], who:'Landlords renting property to tenants, and tenants who want a fair, clear agreement.' },
+  'lease-termination':     { title:'Lease Termination Notice', tag:'Property', cat:'property', price:'$15', pages:'1–2', desc:'Formally end a tenancy agreement with a properly drafted termination notice compliant with state law.',  includes:['Notice Period Statement','Reason for Termination','Property Condition','Security Deposit Return Terms'], who:'Landlords or tenants who need to legally terminate a residential or commercial lease.' },
+  'property-transfer':     { title:'Property Transfer Deed',   tag:'Transfer', cat:'property', price:'$39', pages:'3–5', desc:'Transfer real property ownership from seller to buyer with a legally valid deed.',  includes:['Grantor & Grantee Details','Legal Property Description','Consideration','Covenants of Title','Notarisation Guide'], who:'Property owners transferring title to another party, including sale, gift, or estate transfers.' },
+  'roommate-agreement':    { title:'Roommate Agreement',       tag:'Property', cat:'property', price:'$15', pages:'2–3', desc:'Define shared living arrangements clearly — covering rent splits, chores, guests, and quiet hours.',  includes:['Rent Allocation','Utility Split','Shared Space Rules','Guest Policy','Conflict Resolution'], who:'Individuals sharing a rental property who want to prevent disputes with housemates.' },
+  'sublease':              { title:'Sublease Agreement',       tag:'Property', cat:'property', price:'$19', pages:'3–4', desc:'Allow a tenant to legally sublease their rental unit to another person with landlord permission.',  includes:['Original Lease Reference','Sublessee Obligations','Rent Responsibilities','Landlord Consent Clause','Term & Termination'], who:'Tenants who need to sublease their rental unit temporarily to another party.' },
+  'child-custody':         { title:'Child Custody Agreement',  tag:'Family', cat:'family', price:'$39', pages:'4–6', desc:'A parenting plan establishing custody, visitation, and child support arrangements in the best interests of the child.',  includes:['Legal & Physical Custody','Parenting Schedule','Holiday Arrangements','Child Support Terms','Modification Clause'], who:'Separating or divorced parents who need a clear, fair parenting arrangement.' },
+  'employee-handbook':     { title:'Employee Handbook',        tag:'Policy', cat:'hr', price:'$49', pages:'20–30', desc:'A comprehensive company policy document covering all essential HR policies and workplace standards.',  includes:['Company Policies Overview','Code of Conduct','Leave & Benefits','Disciplinary Procedures','Health & Safety'], who:'Businesses of all sizes who need a formal, legally sound set of workplace policies.' },
+  'remote-work-policy':    { title:'Remote Work Policy',       tag:'Policy', cat:'hr', price:'$19', pages:'2–4', desc:'Define the rules, expectations, and responsibilities for remote and hybrid employees.',  includes:['Eligibility Criteria','Equipment & Expenses','Working Hours','Data Security','Performance Standards'], who:'Employers offering remote or hybrid working arrangements who need a clear policy document.' },
+};
+
+/* ─────────────────────────────────────────────────────
+   ROUTING
+───────────────────────────────────────────────────── */
+let currentPage = 'home';
+
+function goTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  currentPage = page;
+  updateNavActive(page);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  if (page === 'business') buildBusinessPage();
+  if (page === 'personal') buildPersonalPage();
+  if (page === 'documents') buildDocsPage('all-business');
+}
+
+function updateNavActive(page) {
+  ['business','personal','documents','pricing','about'].forEach(p => {
+    const el = document.getElementById('nav-' + p);
+    if (el) el.classList.toggle('nav-active', p === page);
+  });
+}
+
+/* ─────────────────────────────────────────────────────
+   DOCUMENT DETAIL
+───────────────────────────────────────────────────── */
+function openDoc(id) {
+  const d = allDocs[id];
+  if (!d) return;
+  document.getElementById('doc-detail-tag').textContent = d.tag;
+  document.getElementById('doc-detail-title').textContent = d.title;
+  document.getElementById('doc-detail-subtitle').textContent = 'What is a ' + d.title + '?';
+  document.getElementById('doc-detail-desc').textContent = d.desc;
+  document.getElementById('doc-detail-who').textContent = d.who;
+  document.getElementById('doc-detail-price').innerHTML = '<sup>$</sup>' + d.price.replace('$','');
+  document.getElementById('doc-detail-pages').textContent = d.pages + ' pages';
+  const ul = document.getElementById('doc-detail-includes');
+  ul.innerHTML = d.includes.map(i => `<li>${i}</li>`).join('');
+
+  const parentPage = ['formation','hr','bizagreements'].includes(d.cat) ? 'business' : 'personal';
+  document.getElementById('doc-bc-parent').textContent = parentPage.charAt(0).toUpperCase()+parentPage.slice(1);
+  document.getElementById('doc-bc-parent').setAttribute('onclick', `goTo('${parentPage}')`);
+  document.getElementById('doc-bc-name').textContent = d.title;
+
+  goTo('doc-detail');
+}
+
+function makeDocCard(id) {
+  const d = allDocs[id];
+  if (!d) return '';
+  return `<div class="doc-card" onclick="openDoc('${id}')">
+    <div class="doc-tag">${d.tag}</div>
+    <h4>${d.title}</h4>
+    <div class="doc-price">${d.price}</div>
+  </div>`;
+}
+
+/* ─────────────────────────────────────────────────────
+   BUILD BUSINESS PAGE
+───────────────────────────────────────────────────── */
+function buildBusinessPage() {
+  const formation = ['register-llc','register-corp','register-partnership','non-profit','holding-structure'];
+  const hr = ['employment-contract','director-agreement','written-warning','contractor-agreement','employee-handbook','remote-work-policy'];
+  const agreements = ['shareholder-agreement','commercial-lease','business-transfer','loan-agreement','service-agreement'];
+  const admin = ['nda','board-meeting','register-corp'];
+
+  document.getElementById('biz-formation').innerHTML = formation.map(makeDocCard).join('');
+  document.getElementById('biz-hr').innerHTML = hr.map(makeDocCard).join('');
+  document.getElementById('biz-agreements').innerHTML = agreements.map(makeDocCard).join('');
+  // admin fallback with available docs
+  document.getElementById('biz-admin').innerHTML = ['nda','service-agreement','loan-agreement','commercial-lease'].map(makeDocCard).join('');
+}
+
+/* ─────────────────────────────────────────────────────
+   BUILD PERSONAL PAGE
+───────────────────────────────────────────────────── */
+function buildPersonalPage() {
+  const estate = ['last-will','power-of-attorney','living-will','trust-formation'];
+  const property = ['residential-lease','lease-termination','property-transfer','roommate-agreement','sublease'];
+  const financial = ['loan-agreement','prenuptial','child-custody'];
+
+  document.getElementById('per-estate').innerHTML = estate.map(makeDocCard).join('');
+  document.getElementById('per-property').innerHTML = property.map(makeDocCard).join('');
+  document.getElementById('per-financial').innerHTML = financial.map(makeDocCard).join('');
+}
+
+/* ─────────────────────────────────────────────────────
+   BUILD DOCUMENTS PAGE
+───────────────────────────────────────────────────── */
+const catMap = {
+  'all-business':  ['register-llc','register-corp','register-partnership','non-profit','holding-structure','employment-contract','director-agreement','nda','written-warning','contractor-agreement','shareholder-agreement','commercial-lease','business-transfer','loan-agreement','service-agreement','employee-handbook','remote-work-policy'],
+  'formation':     ['register-llc','register-corp','register-partnership','non-profit','holding-structure'],
+  'hr':            ['employment-contract','director-agreement','written-warning','contractor-agreement','employee-handbook','remote-work-policy'],
+  'bizagreements': ['shareholder-agreement','commercial-lease','business-transfer','loan-agreement','service-agreement','nda'],
+  'all-personal':  ['last-will','power-of-attorney','prenuptial','living-will','trust-formation','residential-lease','lease-termination','property-transfer','roommate-agreement','sublease','child-custody'],
+  'estate':        ['last-will','power-of-attorney','living-will','trust-formation'],
+  'property':      ['residential-lease','lease-termination','property-transfer','roommate-agreement','sublease'],
+  'family':        ['prenuptial','child-custody'],
+  'employment':    ['employment-contract','director-agreement','written-warning','contractor-agreement','employee-handbook','remote-work-policy'],
+};
+
+function filterDocs(cat) {
+  document.querySelectorAll('.docs-sidebar a').forEach(a => a.classList.remove('active'));
+  const el = document.getElementById('filter-' + cat);
+  if (el) el.classList.add('active');
+  const ids = catMap[cat] || catMap['all-business'];
+  document.getElementById('docs-main-grid').innerHTML = ids.map(makeDocCard).join('');
+}
+
+function buildDocsPage(cat) {
+  filterDocs(cat);
+}
+
+/* ─────────────────────────────────────────────────────
+   HOME DOC TABS
+───────────────────────────────────────────────────── */
+const homeDocs = {
+  business:   ['register-llc','register-corp','shareholder-agreement','nda','commercial-lease','loan-agreement','service-agreement','business-transfer'],
+  personal:   ['last-will','trust-formation','power-of-attorney','prenuptial','living-will','child-custody'],
+  property:   ['residential-lease','commercial-lease','sublease','lease-termination','property-transfer','roommate-agreement'],
+  employment: ['employment-contract','director-agreement','contractor-agreement','written-warning','remote-work-policy','employee-handbook'],
+};
+
+function switchTab(el, cat) {
+  document.querySelectorAll('.dtab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('home-docs-grid').innerHTML = homeDocs[cat].map(makeDocCard).join('');
+}
+
+/* ─────────────────────────────────────────────────────
+   FAQ TOGGLE
+───────────────────────────────────────────────────── */
+function toggleFaq(el) {
+  const item = el.parentElement;
+  const tog = el.querySelector('.faq-toggle');
+  item.classList.toggle('open');
+  tog.textContent = item.classList.contains('open') ? '−' : '+';
+}
+
+/* INIT */
+document.getElementById('home-docs-grid').innerHTML = homeDocs.business.map(makeDocCard).join('');
+</script>
+</body>
+</html>
